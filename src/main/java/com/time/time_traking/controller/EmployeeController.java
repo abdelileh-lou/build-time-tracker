@@ -78,6 +78,11 @@ public class EmployeeController {
 
 
 
+    @GetMapping("/AllEmployees")
+    public  ResponseEntity<List<Employee>> getAllEmployeesExceptChefAndManger() {
+        List<Employee> employees = employeeService.getAllEmployeesExceptChefAndManger();
+        return ResponseEntity.ok(employees);
+    }
 
 
 }

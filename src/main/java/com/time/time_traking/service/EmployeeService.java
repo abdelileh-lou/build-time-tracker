@@ -64,4 +64,7 @@ public class EmployeeService {
     }
 
 
+    public List<Employee> getAllEmployeesExceptChefAndManger() {
+        return  employeeRepository.findEmployeesByRole(Role.employee);
+    }
 }

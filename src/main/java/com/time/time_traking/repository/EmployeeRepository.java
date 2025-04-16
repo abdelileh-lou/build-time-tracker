@@ -25,5 +25,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<ChefService> findAllChefServices();
 
 
-
+    List<Employee> findEmployeesByRole(Role role);
 }
