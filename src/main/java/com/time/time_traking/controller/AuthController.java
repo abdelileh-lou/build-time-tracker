@@ -29,7 +29,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public User register(@RequestBody User requestBody) {
-        return userService.registerUser(requestBody.getUsername(), requestBody.getPassword(), requestBody.getRole());
+        return userService.registerUser(
+                requestBody.getUsername(),
+                requestBody.getPassword(),
+                requestBody.getRole(),
+                requestBody.getDepartment()  // Add department
+        );
     }
 
     @PostMapping("/login")
@@ -42,5 +47,6 @@ public class AuthController {
             return Map.of("token", token, "role", user.get().getRole().name());
         }
         throw new RuntimeException("Invalid credentials");
+
     }
 }

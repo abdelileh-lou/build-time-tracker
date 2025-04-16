@@ -22,8 +22,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User registerUser(String username, String password, Role role) {
-        User user = new User(null, username, passwordEncoder.encode(password), role);
+    public User registerUser(String username, String password, Role role, String department) {
+        User user = new User(null, username, passwordEncoder.encode(password), role, department);
         return userRepository.save(user);
     }
 

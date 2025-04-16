@@ -14,16 +14,14 @@ public class User {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
-
-
-    @Column(unique = true , nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
-//    @Column(nullable = false) // Stocke directement en String
-//    private String role;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private String department;
 }

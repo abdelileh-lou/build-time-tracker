@@ -3,7 +3,6 @@ package com.time.time_traking.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,5 +26,9 @@ public class AttendanceRecord {
 
     private String status;
 
+    @Column(name = "notified_manager")
+    private boolean notifiedManager = false;
 
+    @Column(name = "reported_chef")
+    private boolean reportedChef = false;
 }

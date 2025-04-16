@@ -6,13 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "employee")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "employee_type", discriminatorType = DiscriminatorType.STRING)
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,17 +20,22 @@ public class Employee {
 
     private String name;
 
-
     @Email
     private String email;
 
-    private String action;
-
-    @Column(unique = true , nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Column(name = "employee_type", insertable = false, updatable = false)
+    private String employeeType;
+
+    private String department; // Added department field
 
 
 }
