@@ -17,6 +17,7 @@ public class PlanningController {
 
     @PostMapping
     public ResponseEntity<Planning> createPlanning(@RequestBody Planning planning) {
+        System.out.println("Received planning entry: " + planning);
         Planning createdPlanning = planningService.createPlanning(planning);
         return ResponseEntity.ok(createdPlanning);
     }
