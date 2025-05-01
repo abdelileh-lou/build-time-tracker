@@ -45,13 +45,13 @@ public class NotificationService {
 
     // In NotificationService.java
     public void notifyManager(AttendanceRecord record) {
-        if (record.getEmployee().getDepartment() == null) {
+        if (record.getEmployee().getUser().getServices() == null) {
             return; // Skip if employee has no department
         }
 
         // Get all managers in the same department
         List<Manager> managers = employeeRepository.findManagersByDepartment(
-                record.getEmployee().getDepartment()
+                record.getEmployee().getUser().getServices()
         );
 
         for (Manager manager : managers) {
@@ -83,7 +83,7 @@ public class NotificationService {
         return String.format(
                 "Attendance Report\nEmployee: %s\nDepartment: %s\nTime: %s\nType: %s\nStatus: %s",
                 record.getEmployee().getName(),
-                record.getEmployee().getDepartment(),
+                record.getEmployee().getUser().getServices(),
                 record.getTimestamp(),
                 record.getAttendanceType().getName(),
                 record.getStatus()

@@ -2,11 +2,14 @@ package com.time.time_traking.controller;
 
 import com.time.time_traking.model.*;
 import com.time.time_traking.service.EmployeeService;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -83,6 +86,25 @@ public class EmployeeController {
         List<Employee> employees = employeeService.getAllEmployeesExceptChefAndManger();
         return ResponseEntity.ok(employees);
     }
+
+
+
+
+  //new
+    @GetMapping("planning/employee/{id}")
+
+    public ResponseEntity<Planning> getPlanning(@PathVariable Long id) {
+        Planning planning = employeeService.getPlanning(id);
+        if (planning != null) {
+            System.out.println(planning);
+            return new ResponseEntity<>(planning, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
 
 
 }

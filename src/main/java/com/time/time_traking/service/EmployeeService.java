@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -30,23 +31,45 @@ public class EmployeeService {
     }
 
     public Employee addEmployee(Employee employee) {
-//        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+        // Create User first
+        User user = userService.registerUser(
+                employee.getUsername(),
+                employee.getPassword(),
+                employee.getRole(),
+                employee.getService()
+        );
+
+        // Link the User to the Employee
+        employee.setUser(user);
+
+        // Save the Employee
         Employee savedEmployee = employeeRepository.save(employee);
-        userService.registerUser(employee.getUsername(), employee.getPassword(), employee.getRole() , employee.getDepartment());
         return savedEmployee;
     }
 
     public Manager addManager(Manager manager) {
-//        manager.setPassword(passwordEncoder.encode(manager.getPassword()));
+        User user = userService.registerUser(
+                manager.getUsername(),
+                manager.getPassword(),
+                manager.getRole(),
+                manager.getService()
+        );
+
+        manager.setUser(user);
         Manager savedManager = employeeRepository.save(manager);
-        userService.registerUser(manager.getUsername(), manager.getPassword(), manager.getRole() , manager.getDepartment());
         return savedManager;
     }
 
     public ChefService addChefService(ChefService chefService) {
-//        chefService.setPassword(passwordEncoder.encode(chefService.getPassword()));
+        User user = userService.registerUser(
+                chefService.getUsername(),
+                chefService.getPassword(),
+                chefService.getRole(),
+                chefService.getService()
+        );
+
+        chefService.setUser(user);
         ChefService savedChef = employeeRepository.save(chefService);
-        userService.registerUser(chefService.getUsername(), chefService.getPassword(), chefService.getRole() , chefService.getDepartment());
         return savedChef;
     }
 
@@ -66,5 +89,30 @@ public class EmployeeService {
 
     public List<Employee> getAllEmployeesExceptChefAndManger() {
         return  employeeRepository.findEmployeesByRole(Role.employee);
+    }
+
+
+    //new
+    public Planning getPlanning(Long id) {
+//        Employee emp  = employeeRepository.findById(id).orElse(null);
+//        if (emp == null) {}
+//        return
+
+
+        Employee emp = employeeRepository.findById(id).orElse(null);
+        if (emp == null) {
+            return null;
+        }else {
+            return emp.getPlanning();
+        }
+//         Planning planning = employeeRepository.findPlanningById(id);
+//         return planning;
+    }
+
+
+
+    // EmployeeService.java
+    public Optional<Employee> findEmployeeByUser(User user) {
+        return employeeRepository.findByUser(user);
     }
 }

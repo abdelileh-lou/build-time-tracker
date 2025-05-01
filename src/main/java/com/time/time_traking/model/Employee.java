@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -26,8 +29,7 @@ public class Employee {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
-    private String password;
+
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -35,7 +37,20 @@ public class Employee {
     @Column(name = "employee_type", insertable = false, updatable = false)
     private String employeeType;
 
-    private String department; // Added department field
+
+    @ManyToOne
+    @JoinColumn(name = "planning_id")
+    private Planning planning;
 
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+    @Transient
+    private String password;
+
+    @Transient
+    private String service;
 }

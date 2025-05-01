@@ -1,52 +1,96 @@
 package com.time.time_traking.service;
 
+
+import com.time.time_traking.DTO.PlanningDTO;
 import com.time.time_traking.model.Employee;
 import com.time.time_traking.model.Planning;
+import com.time.time_traking.repository.EmployeeRepository;
 import com.time.time_traking.repository.PlanningRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
 import java.util.List;
 
 @Service
 public class PlanningService {
-    @Autowired
-    private PlanningRepository planningRepository;
+    private final PlanningRepository planningRepository;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private EmployeeService employeeService;
 
-    public Planning createPlanning(Planning planning) {
-        // Validate required fields
+    private EmployeeRepository employeeRepository;
 
-        if (planning.getEmployee() == null) {
-            throw new IllegalArgumentException("Employee must be specified");
-        }
-        if (planning.getDate() == null) {
-            throw new IllegalArgumentException("Date must be specified");
-        }
-        if (planning.getStartTime() == null || planning.getEndTime() == null) {
-            throw new IllegalArgumentException("Start and end times must be specified");
-        }
 
-        if (planning.getDepartment() == null || planning.getDepartment().isEmpty()) {
-            throw new IllegalArgumentException("Department must be specified");
-        }
-        // Ensure employee exists
-        Employee employee = employeeService.getEmployeeById(planning.getEmployee().getId());
-        if (employee == null) {
-            throw new IllegalArgumentException("Employee not found");
-        }
+    public PlanningService(PlanningRepository planningRepository, ObjectMapper objectMapper , EmployeeRepository employeeRepository) {
+        this.planningRepository = planningRepository;
+        this.objectMapper = objectMapper;
+        this.employeeRepository = employeeRepository;
+    }
 
-        planning.setEmployee(employee);
+
+
+    public Planning savePlanning(Planning planning) {
         return planningRepository.save(planning);
     }
 
-    public List<Planning> getDepartmentPlanning(String department) {
-        return planningRepository.findByDepartment(department);
+
+
+    public void deletePlanningByName(String name) throws IOException {
+        List<Planning> allPlannings = planningRepository.findAll();
+        for (Planning planning : allPlannings) {
+            JsonNode jsonNode = objectMapper.readTree(planning.getPlanJson());
+            if (jsonNode.has("name") && jsonNode.get("name").asText().equals(name)) {
+                planningRepository.delete(planning);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Planning not found with name: " + name);
     }
 
-    public void deletePlanning(Long id) {
-        planningRepository.deleteById(id);
+    public String getPlanningByName(String name) throws IOException {
+        List<Planning> allPlannings = planningRepository.findAll();
+        for (Planning planning : allPlannings) {
+            JsonNode jsonNode = objectMapper.readTree(planning.getPlanJson());
+            if (jsonNode.has("name") && jsonNode.get("name").asText().equals(name)) {
+                return planning.getPlanJson();
+            }
+        }
+        throw new IllegalArgumentException("Planning not found with name: " + name);
     }
+
+
+
+
+    //del
+    public void assignPlanningToEmployees(String planningName, List<Long> employeeIds) throws IOException {
+        Planning planning = findPlanningEntityByName(planningName);
+        List<Employee> employees = employeeRepository.findAllById(employeeIds);
+
+        for (Employee employee : employees) {
+            employee.setPlanning(planning);
+        }
+        employeeRepository.saveAll(employees);
+    }
+
+    //del
+    private Planning findPlanningEntityByName(String name) throws IOException {
+        List<Planning> allPlannings = planningRepository.findAll();
+        for (Planning planning : allPlannings) {
+            JsonNode jsonNode = objectMapper.readTree(planning.getPlanJson());
+            if (jsonNode.has("name") && jsonNode.get("name").asText().equals(name)) {
+                return planning;
+            }
+        }
+        throw new IllegalArgumentException("Planning not found with name: " + name);
+    }
+
+
+
+
 }

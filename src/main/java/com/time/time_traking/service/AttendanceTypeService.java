@@ -9,7 +9,9 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.time.time_traking.model.AttendanceType;
 import com.time.time_traking.repository.AttendanceTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,57 +21,23 @@ import java.util.List;
 @Service
 public class AttendanceTypeService {
 
-    @Autowired
-    private AttendanceTypeRepository attendanceTypeRepository;
+    private final AttendanceTypeRepository repository;
+
+    public AttendanceTypeService(AttendanceTypeRepository repository) {
+        this.repository = repository;
+    }
 
     public List<AttendanceType> getAllAttendanceTypes() {
-        return attendanceTypeRepository.findAll();
+        return repository.findAll();
     }
 
-    public  AttendanceType getAttendanceTypeById(Long attendanceTypeId) {
-        return attendanceTypeRepository.findById(attendanceTypeId).orElse(null);
-    }
-
-
-
-//    public AttendanceType addAttendanceType(AttendanceType attendanceType) {
-//        String qrCode =  generateQRCode(attendanceType.getName());
-//        attendanceType.setQrCode(qrCode);
-//        return attendanceTypeRepository.save(attendanceType);
-//    }
-
-
-    public AttendanceType addAttendanceType(AttendanceType attendanceType) {
-        // First save to get an ID
-        AttendanceType savedType = attendanceTypeRepository.save(attendanceType);
-
-        // Now generate QR code with the actual ID
-        String qrContent = "ATTENDANCE_TYPE:" + savedType.getId();
-        String qrCode = generateQRCode(qrContent);
-
-        // Update with QR code and save again
-        savedType.setQrCode(qrCode);
-        return attendanceTypeRepository.save(savedType);
-    }
-
-    public void deleteAttendanceType(Long attendanceTypeId) {
-        attendanceTypeRepository.deleteById(attendanceTypeId);
+    public void deleteAttendanceType(Long id) {
+        repository.deleteById(id);
     }
 
 
-    private String generateQRCode(String text) {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        try {
-            BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 200, 200);
-            ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
-            byte[] pngData = pngOutputStream.toByteArray();
-            return Base64.getEncoder().encodeToString(pngData);
-        } catch (WriterException | IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+
+
 
 
 }

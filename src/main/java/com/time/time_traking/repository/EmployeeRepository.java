@@ -7,16 +7,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findByRole(Role role);
 
     // EmployeeRepository.java
-    @Query("SELECT e FROM Employee e WHERE e.department = :department AND TYPE(e) = Manager")
+    @Query("SELECT e FROM Employee e WHERE e.user.services = :department AND TYPE(e) = Manager")
     List<Manager> findManagersByDepartment(@Param("department") String department);
 
-    @Query("SELECT e FROM Employee e WHERE e.department = :department")
+    @Query("SELECT e FROM Employee e WHERE e.user.services = :department")
     List<Employee> findByDepartment(String department);
 
 
@@ -26,4 +27,14 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 
     List<Employee> findEmployeesByRole(Role role);
+
+
+    Planning findPlanningById(Long employeeId);
+
+
+    Optional<Employee> findByUser(User user);
+
+
+
+
 }

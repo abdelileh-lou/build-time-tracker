@@ -2,14 +2,16 @@ package com.time.time_traking.model;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
+@Getter
 @Table (name = "attendance_type")
 public class AttendanceType {
 
@@ -18,9 +20,6 @@ public class AttendanceType {
     private Long id;
     private String name;
     private String description;
-
-    @Column(name = "qr_code" , columnDefinition = "TEXT")
-    private String qrCode;
 
 
 

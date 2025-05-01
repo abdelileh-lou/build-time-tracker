@@ -2,31 +2,32 @@ package com.time.time_traking.model;
 
 import com.time.time_traking.model.Employee;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Table(name = "plannings")
 public class Planning {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
+
+    @Column(columnDefinition = "TEXT")
+    private String planJson;
 
 
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
 
-    private LocalDate date;
-    private String startTime;
-    private String endTime;
-    private Double hours;
-    private String description;
-    @Column(nullable = false)
-    private String department;
 
-    // Make sure you have proper getters and setters
-    // Lombok @Data should handle this, but you might need custom ones
+
+
 }
