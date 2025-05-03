@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,36 +48,7 @@ public class AuthController {
         );
     }
 
-//    @PostMapping("/login")
-//    public Map<String, String> login(@RequestBody User requestBody) {
-//        Optional<User> user = userService.findByUsername(requestBody.getUsername());
-//
-//
-//        if (user.isPresent() &&  passwordEncoder.matches(requestBody.getPassword(), user.get().getPassword())) {
-//            String token = jwtUtil.generateToken(user.get().getUsername());
-//            return Map.of("token", token, "role", user.get().getRole().name());
-//        }
-//        throw new RuntimeException("Invalid credentials");
-//
-//    }
 
-    
-    // this will be used  to get employeeId
-
-//    @PostMapping("/login")
-//    public Map<String, String> login(@RequestBody User requestBody) {
-//        Optional<User> user = userService.findByUsername(requestBody.getUsername());
-//
-//        if (user.isPresent() && passwordEncoder.matches(requestBody.getPassword(), user.get().getPassword())) {
-//            String token = jwtUtil.generateToken(user.get().getUsername());
-//            return Map.of(
-//                    "token", token,
-//                    "role", user.get().getRole().name(),
-//                    "employeeId", user.get().getId().toString() // Ensure this is the correct ID
-//            );
-//        }
-//        throw new RuntimeException("Invalid credentials");
-//    }
 
 
 
@@ -115,5 +87,33 @@ public class AuthController {
     }
 
 
+
+    // AuthController.java - Add proper security configuration
+    @GetMapping("/current-user")
+    public ResponseEntity<Map<String, Object>> getCurrentUser(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String username = principal.getName();
+        User user = userService.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("username", user.getUsername());
+        userData.put("role", user.getRole().name());
+
+        // Handle null services more explicitly
+        userData.put("services", user.getServices() != null ? user.getServices() : "");
+
+        // For non-admin users, add employeeId if needed
+        if (user.getRole() != Role.admin) {
+            Employee employee = employeeService.findEmployeeByUser(user)
+                    .orElseThrow(() -> new RuntimeException("Employee not found"));
+            userData.put("employeeId", employee.getId());
+        }
+
+        return ResponseEntity.ok(userData);
+    }
 
 }

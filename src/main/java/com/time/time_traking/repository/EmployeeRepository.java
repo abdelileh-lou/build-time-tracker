@@ -36,5 +36,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 
 
+    //Showing employees from your service only
+    @Query("SELECT e FROM Employee e WHERE e.user.services = :service AND e.role = 'EMPLOYEE'")
+    List<Employee> findEmployeesByServiceAndRoleEmployee(@Param("service") String service);
+
+
 
 }

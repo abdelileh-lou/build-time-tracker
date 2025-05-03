@@ -5,6 +5,11 @@ import com.time.time_traking.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,39 +44,66 @@ public class EmployeeService {
                 employee.getService()
         );
 
+        // Convert facial data if exists
+//        if(facialDescriptor != null) {
+//            byte[] facialBytes = convertFacialDescriptorToBytes(facialDescriptor);
+//            employee.setFacialData(facialBytes);
+//        }
+
         // Link the User to the Employee
         employee.setUser(user);
 
-        // Save the Employee
-        Employee savedEmployee = employeeRepository.save(employee);
-        return savedEmployee;
+        return employeeRepository.save(employee);
     }
 
-    public Manager addManager(Manager manager) {
+    private byte[] convertFacialDescriptorToBytes(List<Double> descriptor) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bos);
+        try {
+            for (Double d : descriptor) {
+                dos.writeDouble(d);
+            }
+            return bos.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException("Error converting facial descriptor", e);
+        }
+    }
+
+    public Manager addManager(Manager manager, List<Double> facialDescriptor) {
         User user = userService.registerUser(
                 manager.getUsername(),
                 manager.getPassword(),
-                manager.getRole(),
+                Role.manager,
                 manager.getService()
         );
 
+//        if(facialDescriptor != null) {
+//            byte[] facialBytes = convertFacialDescriptorToBytes(facialDescriptor);
+//            manager.setFacialData(facialBytes);
+//        }
+
         manager.setUser(user);
-        Manager savedManager = employeeRepository.save(manager);
-        return savedManager;
+        return employeeRepository.save(manager);
     }
 
-    public ChefService addChefService(ChefService chefService) {
+    public ChefService addChefService(ChefService chefService, List<Double> facialDescriptor) {
         User user = userService.registerUser(
                 chefService.getUsername(),
                 chefService.getPassword(),
-                chefService.getRole(),
+                Role.chef,
                 chefService.getService()
         );
+//
+//        if(facialDescriptor != null) {
+//            byte[] facialBytes = convertFacialDescriptorToBytes(facialDescriptor);
+//            chefService.setFacialData(facialBytes);
+//        }
 
         chefService.setUser(user);
-        ChefService savedChef = employeeRepository.save(chefService);
-        return savedChef;
+        return employeeRepository.save(chefService);
     }
+
+
 
     public void deleteEmployee(Long id) {
         employeeRepository.deleteById(id);
@@ -114,5 +146,54 @@ public class EmployeeService {
     // EmployeeService.java
     public Optional<Employee> findEmployeeByUser(User user) {
         return employeeRepository.findByUser(user);
+    }
+
+    public Employee updateEmployee(
+            Long id,
+            String name,
+            String email,
+            String password,
+            MultipartFile imageFile
+    ) {
+        Employee existingEmployee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        // Update basic fields
+        if (name != null) existingEmployee.setName(name);
+        if (email != null) existingEmployee.setEmail(email);
+
+        // Update password in associated User entity
+        if (password != null && !password.isEmpty()) {
+            User user = existingEmployee.getUser();
+            user.setPassword(passwordEncoder.encode(password));
+            userService.updateUser(user);  // Make sure you have this service method
+        }
+
+        // Handle image update
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                existingEmployee.setImageName(imageFile.getOriginalFilename());
+                existingEmployee.setImageType(imageFile.getContentType());
+                existingEmployee.setImageData(imageFile.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process image file", e);
+            }
+        }
+
+        return employeeRepository.save(existingEmployee);
+    }
+
+
+    //Showing employees from your service only
+    public List<Employee> getEmployeesByService(String service) {
+        return employeeRepository.findEmployeesByServiceAndRoleEmployee(service);
+    }
+
+
+
+    //deleted
+    public Employee findEmployeeById(Long employeeId) {
+        return employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
     }
 }

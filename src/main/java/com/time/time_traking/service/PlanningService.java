@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlanningService {
@@ -91,6 +92,12 @@ public class PlanningService {
     }
 
 
+    public Optional<Planning> findPlanningById(Long planningId) {
+        return planningRepository.findById(planningId);
+    }
 
 
+    public List<Planning> getAllPlannings() {
+        return planningRepository.findAll();
+    }
 }

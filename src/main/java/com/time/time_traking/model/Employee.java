@@ -53,4 +53,15 @@ public class Employee {
 
     @Transient
     private String service;
+
+
+    private String imageName;
+    private String imageType;
+    @Lob
+    private byte[] imageData;
+
+
+    @Lob // pour les longues données
+    @Column(columnDefinition = "TEXT")
+    private String facialData; // Add facial data field
 }

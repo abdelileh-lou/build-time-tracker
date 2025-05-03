@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/planning")
@@ -32,31 +33,6 @@ public class PlanningController {
         this.objectMapper = objectMapper;
     }
 
-//    @PostMapping
-//    public ResponseEntity<?> createPlanning(@RequestBody Map<String, String> request) {
-//        try {
-//            String planJson = request.get;
-//            return ResponseEntity.ok(planningService.savePlanning(planJson));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid planning data");
-//        }
-//    }
-
-
-
-//    @PostMapping
-//    public ResponseEntity<Planning> addPlanning(@RequestBody Planning planning) {
-//        Planning savedPlanning = planningService.savePlanning(planning);
-//        return new ResponseEntity<>(savedPlanning, HttpStatus.CREATED);
-//    }
-
-//    @PostMapping
-//    public ResponseEntity<Planning> addPlanning(@RequestBody Map<String, String> request) {
-//        Planning newPlanning = new Planning();
-//        newPlanning.setPlanJson(request.get("planJson")); // Match frontend key
-//        Planning savedPlanning = planningService.savePlanning(newPlanning);
-//        return new ResponseEntity<>(savedPlanning, HttpStatus.CREATED);
-//    }
 
 
 
@@ -79,22 +55,11 @@ public class PlanningController {
     }
 
 
-    //old
-//    @PostMapping("/assign-planning")
-//    public ResponseEntity<?> assignPlanning(@RequestBody Map<String, String> request) {
-//        try {
-//            String planningName = request.get("planningName");
-//            String planJson = planningService.getPlanningByName(planningName);
-//            // Add your business logic here to assign planning to employees
-//            return ResponseEntity.ok().body("Planning assigned successfully");
-//        } catch (IOException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//        }
-//    }
 
 
 
-    //del
+
+
     @PostMapping("/assign-planning")
     public ResponseEntity<?> assignPlanning(@RequestBody Map<String, Object> request) {
         try {
@@ -108,6 +73,20 @@ public class PlanningController {
     }
 
 
+
+
+    @GetMapping
+    public ResponseEntity<List<Planning>> getAllPlannings() {
+        List<Planning> plannings = planningService.getAllPlannings();
+        return ResponseEntity.ok(plannings);
+    }
+
+    @GetMapping("/{planningId}")
+    public ResponseEntity<Planning> getPlanningById(@PathVariable Long planningId) {
+        Optional<Planning> planning = planningService.findPlanningById(planningId);
+        return planning.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
 
 }
