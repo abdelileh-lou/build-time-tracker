@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -69,22 +70,42 @@ public class EmployeeService {
         }
     }
 
-    public Manager addManager(Manager manager, List<Double> facialDescriptor) {
-        User user = userService.registerUser(
-                manager.getUsername(),
-                manager.getPassword(),
-                Role.manager,
-                manager.getService()
-        );
+//    public Manager addManager(Manager manager, List<Double> facialDescriptor) {
+//        User user = userService.registerUser(
+//                manager.getUsername(),
+//                manager.getPassword(),
+//                Role.manager,
+//                manager.getService()
+//        );
+//
+////        if(facialDescriptor != null) {
+////            byte[] facialBytes = convertFacialDescriptorToBytes(facialDescriptor);
+////            manager.setFacialData(facialBytes);
+////        }
+//
+//        manager.setUser(user);
+//        return employeeRepository.save(manager);
+//    }
 
-//        if(facialDescriptor != null) {
-//            byte[] facialBytes = convertFacialDescriptorToBytes(facialDescriptor);
-//            manager.setFacialData(facialBytes);
-//        }
+public Manager addManager(Manager manager, List<Double> facialDescriptor) {
+    User user = userService.registerUser(
+            manager.getUsername(),
+            manager.getPassword(),
+            Role.manager,
+            manager.getService()
+    );
 
-        manager.setUser(user);
-        return employeeRepository.save(manager);
+    if (facialDescriptor != null) {
+        // Convert list of doubles to comma-separated string
+        String facialData = facialDescriptor.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        manager.setFacialData(facialData);
     }
+
+    manager.setUser(user);
+    return employeeRepository.save(manager);
+}
 
     public ChefService addChefService(ChefService chefService, List<Double> facialDescriptor) {
         User user = userService.registerUser(
@@ -196,4 +217,20 @@ public class EmployeeService {
         return employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
     }
+
+    public String getFacialDataByEmployeeId(Long id) {
+        Employee employee = getEmployeeById(id);
+        if (employee == null) {
+            throw new RuntimeException("Employee not found");
+        }
+        return employee.getFacialData();
+    }
+
+    public Employee saveEmployee(Employee employee) {
+        return employeeRepository.save(employee);
+    }
+
+
+
+
 }

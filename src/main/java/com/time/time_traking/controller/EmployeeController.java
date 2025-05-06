@@ -1,5 +1,8 @@
 package com.time.time_traking.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.time.time_traking.model.*;
 import com.time.time_traking.service.EmployeeService;
 import com.time.time_traking.service.UserService;
@@ -15,10 +18,8 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -121,17 +122,7 @@ public class EmployeeController {
 
 
 
-//    @PutMapping("/employee/{id}")
-//    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestPart Employee employee , @RequestPart MultipartFile imageFile) {
-//
-//        Employee updatedEmployee = employeeService.updateEmployee(id, employee , imageFile);
-//        if (updatedEmployee != null) {
-//            return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//    }
+
 
 
     @PutMapping("/employee/{id}")
@@ -182,31 +173,127 @@ public class EmployeeController {
 
 
 
-//    @PostMapping("/verify-face")
-//    public ResponseEntity<?> verifyFace(@RequestBody Map<String, Object> request) {
-//        try {
-//            Long employeeId = Long.parseLong(request.get("employeeId").toString());
-//            List<Double> currentDescriptor = (List<Double>) request.get("descriptor");
-//
-//            Employee employee = employeeService.findEmployeeById(employeeId);
-//
-//            List<Double> storedDescriptor = convertBytesToDescriptor(employee.getFacialData());
-//
-//            if (currentDescriptor.size() != storedDescriptor.size()) {
-//                return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Descriptor size mismatch"));
-//            }
-//
-//            double distance = calculateDistance(currentDescriptor, storedDescriptor);
-//
-//            return ResponseEntity.ok().body(Collections.singletonMap("match", distance < 0.6));
-//        } catch (NumberFormatException e) {
-//            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Invalid employee ID"));
-//        } catch (RuntimeException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", e.getMessage()));
-//        } catch (Exception e) {
-//            return ResponseEntity.internalServerError().body(Collections.singletonMap("error", "Internal server error"));
-//        }
-//    }
+
+
+
+@PostMapping("/enroll-face")
+public ResponseEntity<?> enrollFace(
+        @RequestBody Map<String, Object> request,
+        Authentication authentication
+) {
+    try {
+        // Add validation for employee existence
+        Long employeeId = Long.parseLong(request.get("employeeId").toString());
+        Employee employee = employeeService.findEmployeeById(employeeId);
+        if (employee == null) {
+            return ResponseEntity.badRequest().body(
+                    Collections.singletonMap("error", "Employee not found")
+            );
+        }
+
+        // Validate facial data structure
+        if (!validateFacialData(request)) {
+            return ResponseEntity.badRequest().body(
+                    Collections.singletonMap("error", "Invalid facial data structure")
+            );
+        }
+
+        // Convert and save
+        ObjectMapper mapper = new ObjectMapper();
+        String facialDataJson = mapper.writeValueAsString(request);
+        employee.setFacialData(facialDataJson);
+        employeeService.saveEmployee(employee);
+
+        return ResponseEntity.ok().body(Map.of(
+                "message", "Facial data enrolled successfully",
+                "employeeId", employeeId
+        ));
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(
+                Collections.singletonMap("error", e.getMessage())
+        );
+    }
+}
+
+    private boolean validateFacialData(Map<String, Object> request) {
+        return request.containsKey("descriptor") &&
+                request.containsKey("landmarks") &&
+                request.containsKey("box") &&
+                request.get("descriptor") instanceof List &&
+                ((List<?>) request.get("descriptor")).stream().allMatch(n -> n instanceof Number);
+    }
+
+
+    @PostMapping("/verify-face")
+    public ResponseEntity<?> verifyFace(
+            @RequestBody Map<String, Object> request,
+            Authentication authentication
+    ) {
+        try {
+            // Validate request structure
+            if (!request.containsKey("employeeId") || !request.containsKey("descriptor")) {
+                return ResponseEntity.badRequest().body(
+                        Collections.singletonMap("error", "Missing required fields")
+                );
+            }
+
+            Long employeeId = Long.parseLong(request.get("employeeId").toString());
+            List<Double> currentDescriptor = ((List<Number>) request.get("descriptor"))
+                    .stream().map(Number::doubleValue).toList();
+
+            Employee employee = employeeService.findEmployeeById(employeeId);
+            if (employee.getFacialData() == null) {
+                return ResponseEntity.badRequest().body(
+                        Collections.singletonMap("error", "No facial data registered")
+                );
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode storedData = mapper.readTree(employee.getFacialData());
+            List<Double> storedDescriptor = new ArrayList<>();
+            for (JsonNode node : storedData.get("descriptor")) {
+                storedDescriptor.add(node.asDouble());
+            }
+
+            if (currentDescriptor.size() != storedDescriptor.size()) {
+                return ResponseEntity.badRequest().body(
+                        Collections.singletonMap("error", "Descriptor dimension mismatch")
+                );
+            }
+
+            double distance = calculateDistance(currentDescriptor, storedDescriptor);
+            return ResponseEntity.ok().body(Map.of(
+                    "match", distance < 0.6,
+                    "confidence", 1 - distance,
+                    "employee", Map.of(
+                            "id", employee.getId(),
+                            "name", employee.getName(),
+                            "service", employee.getService()
+                    )
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    Collections.singletonMap("error", e.getMessage())
+            );
+        }
+    }
+
+
+
+    private double calculateDistance(List<Double> vec1, List<Double> vec2) {
+        // Implement your distance calculation logic
+        double sum = 0;
+        for (int i = 0; i < vec1.size(); i++) {
+            sum += Math.pow(vec1.get(i) - vec2.get(i), 2);
+        }
+        return Math.sqrt(sum);
+    }
+
+    private List<Double> parseFacialData(String facialData) {
+        return Arrays.stream(facialData.split(","))
+                .map(Double::parseDouble)
+                .collect(Collectors.toList());
+    }
 
     // Helper Methods
     private List<Double> convertBytesToDescriptor(byte[] bytes) {
@@ -225,15 +312,69 @@ public class EmployeeController {
         }
     }
 
-    private double calculateDistance(List<Double> d1, List<Double> d2) {
-        if (d1.size() != d2.size()) {
-            throw new IllegalArgumentException("Descriptors must be of the same length");
-        }
 
-        double sum = 0;
-        for (int i = 0; i < d1.size(); i++) {
-            sum += Math.pow(d1.get(i) - d2.get(i), 2);
-        }
-        return Math.sqrt(sum);
+
+
+
+
+//    @GetMapping("/employee/{id}/facial-data")
+//    public ResponseEntity<?> getFacialDataEmployee(@PathVariable Long id) {
+//        try {
+//            Employee employee = employeeService.getEmployeeById(id);
+//            if (employee == null) {
+//                return ResponseEntity.notFound().build();
+//            }
+//            String facialDataStr = employee.getFacialData();
+//            if (facialDataStr == null || facialDataStr.trim().isEmpty()) {
+//                return ResponseEntity.notFound().build();
+//            }
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            try {
+//                // Parse JSON to extract the "description" array
+//                JsonNode rootNode = objectMapper.readTree(facialDataStr);
+//                JsonNode descriptionNode = rootNode.get("description");
+//
+//                if (descriptionNode == null || !descriptionNode.isArray()) {
+//                    return ResponseEntity.badRequest().body("Invalid facial data format");
+//                }
+//
+//                List<Double> facialData = new ArrayList<>();
+//                for (JsonNode node : descriptionNode) {
+//                    if (node.isNumber()) {
+//                        facialData.add(node.asDouble());
+//                    } else {
+//                        return ResponseEntity.badRequest().body("Invalid facial data format");
+//                    }
+//                }
+//
+//                if (facialData.isEmpty()) {
+//                    return ResponseEntity.notFound().build();
+//                }
+//
+//                return ResponseEntity.ok(facialData);
+//            } catch (JsonProcessingException e) {
+//                return ResponseEntity.badRequest().body("Invalid facial data format");
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
+    @GetMapping("/employee/{id}/facial-data")
+    public ResponseEntity<?> getFacialDataEmployee(@PathVariable Long id) {
+
+            Employee employee = employeeService.getEmployeeById(id);
+            if (employee == null) {
+                return ResponseEntity.notFound().build();
+            }
+            String facialDataStr = employee.getFacialData();
+
+            return ResponseEntity.ok(facialDataStr);
+
+
+
     }
+
+
 }
