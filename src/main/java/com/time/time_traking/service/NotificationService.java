@@ -85,7 +85,7 @@ public class NotificationService {
                 record.getEmployee().getName(),
                 record.getEmployee().getUser().getServices(),
                 record.getTimestamp(),
-                record.getAttendanceType().getName(),
+
                 record.getStatus()
         );
     }

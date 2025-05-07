@@ -17,9 +17,7 @@ public class AttendanceRecord {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    @ManyToOne
-    @JoinColumn(name = "attendance_type_id", nullable = false)
-    private AttendanceType attendanceType;
+
 
     @Column(nullable = false)
     private LocalDateTime timestamp;

@@ -231,6 +231,11 @@ public Manager addManager(Manager manager, List<Double> facialDescriptor) {
     }
 
 
+    public Employee findById(Long id) {
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+    }
+
 
 
 }
