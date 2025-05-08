@@ -107,7 +107,7 @@ public class EmployeeController {
 
 
 
-  //new
+    //new
     @GetMapping("planning/employee/{id}")
 
     public ResponseEntity<Planning> getPlanning(@PathVariable Long id) {
@@ -176,44 +176,44 @@ public class EmployeeController {
 
 
 
-@PostMapping("/enroll-face")
-public ResponseEntity<?> enrollFace(
-        @RequestBody Map<String, Object> request,
-        Authentication authentication
-) {
-    try {
-        // Add validation for employee existence
-        Long employeeId = Long.parseLong(request.get("employeeId").toString());
-        Employee employee = employeeService.findEmployeeById(employeeId);
-        if (employee == null) {
+    @PostMapping("/enroll-face")
+    public ResponseEntity<?> enrollFace(
+            @RequestBody Map<String, Object> request,
+            Authentication authentication
+    ) {
+        try {
+            // Add validation for employee existence
+            Long employeeId = Long.parseLong(request.get("employeeId").toString());
+            Employee employee = employeeService.findEmployeeById(employeeId);
+            if (employee == null) {
+                return ResponseEntity.badRequest().body(
+                        Collections.singletonMap("error", "Employee not found")
+                );
+            }
+
+            // Validate facial data structure
+            if (!validateFacialData(request)) {
+                return ResponseEntity.badRequest().body(
+                        Collections.singletonMap("error", "Invalid facial data structure")
+                );
+            }
+
+            // Convert and save
+            ObjectMapper mapper = new ObjectMapper();
+            String facialDataJson = mapper.writeValueAsString(request);
+            employee.setFacialData(facialDataJson);
+            employeeService.saveEmployee(employee);
+
+            return ResponseEntity.ok().body(Map.of(
+                    "message", "Facial data enrolled successfully",
+                    "employeeId", employeeId
+            ));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    Collections.singletonMap("error", "Employee not found")
+                    Collections.singletonMap("error", e.getMessage())
             );
         }
-
-        // Validate facial data structure
-        if (!validateFacialData(request)) {
-            return ResponseEntity.badRequest().body(
-                    Collections.singletonMap("error", "Invalid facial data structure")
-            );
-        }
-
-        // Convert and save
-        ObjectMapper mapper = new ObjectMapper();
-        String facialDataJson = mapper.writeValueAsString(request);
-        employee.setFacialData(facialDataJson);
-        employeeService.saveEmployee(employee);
-
-        return ResponseEntity.ok().body(Map.of(
-                "message", "Facial data enrolled successfully",
-                "employeeId", employeeId
-        ));
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().body(
-                Collections.singletonMap("error", e.getMessage())
-        );
     }
-}
 
     private boolean validateFacialData(Map<String, Object> request) {
         return request.containsKey("descriptor") &&
@@ -364,13 +364,13 @@ public ResponseEntity<?> enrollFace(
     @GetMapping("/employee/{id}/facial-data")
     public ResponseEntity<?> getFacialDataEmployee(@PathVariable Long id) {
 
-            Employee employee = employeeService.getEmployeeById(id);
-            if (employee == null) {
-                return ResponseEntity.notFound().build();
-            }
-            String facialDataStr = employee.getFacialData();
+        Employee employee = employeeService.getEmployeeById(id);
+        if (employee == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String facialDataStr = employee.getFacialData();
 
-            return ResponseEntity.ok(facialDataStr);
+        return ResponseEntity.ok(facialDataStr);
 
 
 

@@ -78,34 +78,34 @@ public class EmployeeService {
 //                manager.getService()
 //        );
 //
-////        if(facialDescriptor != null) {
-////            byte[] facialBytes = convertFacialDescriptorToBytes(facialDescriptor);
-////            manager.setFacialData(facialBytes);
-////        }
+    ////        if(facialDescriptor != null) {
+    ////            byte[] facialBytes = convertFacialDescriptorToBytes(facialDescriptor);
+    ////            manager.setFacialData(facialBytes);
+    ////        }
 //
 //        manager.setUser(user);
 //        return employeeRepository.save(manager);
 //    }
 
-public Manager addManager(Manager manager, List<Double> facialDescriptor) {
-    User user = userService.registerUser(
-            manager.getUsername(),
-            manager.getPassword(),
-            Role.manager,
-            manager.getService()
-    );
+    public Manager addManager(Manager manager, List<Double> facialDescriptor) {
+        User user = userService.registerUser(
+                manager.getUsername(),
+                manager.getPassword(),
+                Role.manager,
+                manager.getService()
+        );
 
-    if (facialDescriptor != null) {
-        // Convert list of doubles to comma-separated string
-        String facialData = facialDescriptor.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
-        manager.setFacialData(facialData);
+        if (facialDescriptor != null) {
+            // Convert list of doubles to comma-separated string
+            String facialData = facialDescriptor.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+            manager.setFacialData(facialData);
+        }
+
+        manager.setUser(user);
+        return employeeRepository.save(manager);
     }
-
-    manager.setUser(user);
-    return employeeRepository.save(manager);
-}
 
     public ChefService addChefService(ChefService chefService, List<Double> facialDescriptor) {
         User user = userService.registerUser(
@@ -134,7 +134,7 @@ public Manager addManager(Manager manager, List<Double> facialDescriptor) {
         return employeeRepository.findByRole(role);
     }
 
-// chef delete
+    // chef delete
     public List<Employee> getEmployeesByDepartment(String department) {
         return employeeRepository.findByDepartment(department);
     }

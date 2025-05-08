@@ -76,7 +76,35 @@ public class AttendanceRecordController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
+    }
 
+    @PostMapping("/report-to-chef")
+    public ResponseEntity<List<AttendanceRecordDTO>> reportToChef() {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+
+        List<AttendanceRecord> records = attendanceRecordRepository.findByTimestampBetween(startOfDay, endOfDay);
+
+        List<AttendanceRecordDTO> dtos = records.stream()
+                .map(record -> {
+                    AttendanceRecordDTO dto = new AttendanceRecordDTO(
+                            record.getId(),
+                            record.getEmployee().getId(),
+                            record.getEmployee().getName(),
+                            record.getTimestamp(),
+                            record.getStatus(),
+                            record.isNotifiedManager(),
+                            record.isReportedChef());
+                    
+                    // Mark the record as reported to chef
+                    record.setReportedChef(true);
+                    attendanceRecordService.save(record);
+                    
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
 
 }

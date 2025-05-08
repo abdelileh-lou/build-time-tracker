@@ -2,9 +2,6 @@ package com.time.time_traking.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.time.time_traking.DTO.PlanningDTO;
-import com.time.time_traking.model.ChefService;
-import com.time.time_traking.model.Employee;
 import com.time.time_traking.model.Planning;
 import com.time.time_traking.service.EmployeeService;
 import com.time.time_traking.service.PlanningService;
@@ -13,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
