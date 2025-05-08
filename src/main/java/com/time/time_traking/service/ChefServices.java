@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ChefServices {
-    
+
     private final AttendanceRecordRepository attendanceRecordRepository;
 
     public ChefServices(AttendanceRecordRepository attendanceRecordRepository) {
@@ -29,7 +29,7 @@ public class ChefServices {
         // - Store them in a separate table
         // - Generate reports
         // - Send notifications
-        
+
         return records;
     }
 

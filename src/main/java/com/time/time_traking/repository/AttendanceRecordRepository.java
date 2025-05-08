@@ -19,7 +19,7 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
 
 
 
-        Optional<AttendanceRecord> findByEmployeeId(Long employeeId);
+    Optional<AttendanceRecord> findByEmployeeId(Long employeeId);
 
     // Find attendance records by timestamp range (for today's records)
     List<AttendanceRecord> findByTimestampBetween(LocalDateTime start, LocalDateTime end);

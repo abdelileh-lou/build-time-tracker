@@ -95,11 +95,11 @@ public class AttendanceRecordController {
                             record.getStatus(),
                             record.isNotifiedManager(),
                             record.isReportedChef());
-                    
+
                     // Mark the record as reported to chef
                     record.setReportedChef(true);
                     attendanceRecordService.save(record);
-                    
+
                     return dto;
                 })
                 .collect(Collectors.toList());
