@@ -29,4 +29,7 @@ public class AttendanceRecord {
 
     @Column(name = "reported_chef")
     private boolean reportedChef = false;
+
+    @Column(name = "method")  // Add this field
+    private String method;
 }

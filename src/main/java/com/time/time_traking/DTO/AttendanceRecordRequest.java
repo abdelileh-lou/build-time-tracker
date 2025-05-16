@@ -15,6 +15,7 @@ public class AttendanceRecordRequest {
     private Long employeeId;
     private String status;
     private LocalDateTime timestamp;
+    private String qrCode;
 
 
 }

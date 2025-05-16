@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 public class AttendanceRecordController {
 
 
+
+    private static final long QR_CODE_VALID_SECONDS = 300;
     private EmployeeService employeeService;
     private AttendanceRecordService attendanceRecordService;
     private AttendanceRecordRepository attendanceRecordRepository;
@@ -34,17 +37,54 @@ public class AttendanceRecordController {
         this.attendanceRecordRepository = attendanceRecordRepository;
     }
 
-    @PostMapping("/record")
-    public AttendanceRecord recordAttendance(@RequestBody AttendanceRecordRequest request) {
-        Employee employee = employeeService.findById(request.getEmployeeId());
+//    @PostMapping("/record")
+//    public AttendanceRecord recordAttendance(@RequestBody AttendanceRecordRequest request) {
+//        Employee employee = employeeService.findById(request.getEmployeeId());
+//
+//        AttendanceRecord record = new AttendanceRecord();
+//        record.setEmployee(employee);
+//        record.setStatus(request.getStatus());
+//        record.setTimestamp(LocalDateTime.now());
+//
+//        record = attendanceRecordService.save(record);
+//        return  record;
+//    }
+@PostMapping("/record")
+public AttendanceRecord recordAttendance(@RequestBody AttendanceRecordRequest request) {
+    // Add QR code validation logic here
+    if (request.getQrCode() != null) {
+        // Validate QR code format and expiration
+        if (!request.getQrCode().startsWith("TIMETRACK-") ||
+                !isValidQrCode(request.getQrCode())) {
+            throw new RuntimeException("QR code invalide");
+        }
 
-        AttendanceRecord record = new AttendanceRecord();
-        record.setEmployee(employee);
-        record.setStatus(request.getStatus());
-        record.setTimestamp(LocalDateTime.now());
 
-        record = attendanceRecordService.save(record);
-        return  record;
+    }
+
+
+    Employee employee = employeeService.findById(request.getEmployeeId());
+
+    AttendanceRecord record = new AttendanceRecord();
+    record.setEmployee(employee);
+    record.setStatus(request.getStatus());
+    record.setTimestamp(LocalDateTime.now());
+    record.setMethod(request.getQrCode() != null ? "QR_CODE" : "FACIAL");
+
+    return attendanceRecordService.save(record);
+}
+    private boolean isValidQrCode(String qrCode) {
+        // Check format: TIMETRACK-<timestamp>-<random-string>
+        String[] parts = qrCode.split("-");
+        if (parts.length < 3 || !parts[0].equals("TIMETRACK")) {
+            return false;
+        }
+
+        // Check expiration time
+        long qrTimestamp = Long.parseLong(parts[1]);
+        long currentTime = System.currentTimeMillis() / 1000;
+
+        return (currentTime - qrTimestamp) <= QR_CODE_VALID_SECONDS;
     }
 
 
@@ -105,6 +145,19 @@ public class AttendanceRecordController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
+    }
+
+
+    @PostMapping("/qr-code")
+    public ResponseEntity<?> generateQrCode() {
+
+        String qrData = "TIMETRACK-" + UUID.randomUUID().toString() + "-" + System.currentTimeMillis();
+
+        // You might want to store this in database with expiration time
+        return ResponseEntity.ok().body(Map.of(
+                "qrCode", qrData,
+                "expiresAt", LocalDateTime.now().plusMinutes(5)
+        ));
     }
 
 }
