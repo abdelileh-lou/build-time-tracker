@@ -71,7 +71,7 @@ public class PlanningController {
 
 
 
-    @GetMapping
+    @GetMapping("/plannings")
     public ResponseEntity<List<Planning>> getAllPlannings() {
         List<Planning> plannings = planningService.getAllPlannings();
         return ResponseEntity.ok(plannings);

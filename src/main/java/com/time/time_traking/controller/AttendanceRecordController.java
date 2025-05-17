@@ -9,6 +9,7 @@ import com.time.time_traking.repository.AttendanceRecordRepository;
 import com.time.time_traking.service.AttendanceRecordService;
 import com.time.time_traking.service.EmployeeService;
 import org.springframework.boot.autoconfigure.batch.BatchTransactionManager;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -158,6 +159,31 @@ public AttendanceRecord recordAttendance(@RequestBody AttendanceRecordRequest re
                 "qrCode", qrData,
                 "expiresAt", LocalDateTime.now().plusMinutes(5)
         ));
+    }
+
+
+    @GetMapping("/history")
+    public ResponseEntity<List<AttendanceRecordDTO>> getAttendanceHistory(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) Long employeeId,
+            @RequestParam(required = false) String service,
+            @RequestParam(required = false) String status) {
+
+        List<AttendanceRecord> records = attendanceRecordService.getAttendanceHistory(startDate, endDate, employeeId, service, status);
+
+        List<AttendanceRecordDTO> dtos = records.stream()
+                .map(record -> new AttendanceRecordDTO(
+                        record.getId(),
+                        record.getEmployee().getId(),
+                        record.getEmployee().getName(),
+                        record.getTimestamp(),
+                        record.getStatus(),
+                        record.isNotifiedManager(),
+                        record.isReportedChef()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
 
 }

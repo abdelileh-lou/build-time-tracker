@@ -27,4 +27,20 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
     // Find attendance records for specific employee by timestamp range
     List<AttendanceRecord> findByEmployeeIdAndTimestampBetween(Long employeeId, LocalDateTime start, LocalDateTime end);
 
+
+
+
+    @Query("SELECT ar FROM AttendanceRecord ar WHERE " +
+            "(:startDateTime IS NULL OR ar.timestamp >= :startDateTime) AND " +
+            "(:endDateTime IS NULL OR ar.timestamp <= :endDateTime) AND " +
+            "(:employeeId IS NULL OR ar.employee.id = :employeeId) AND " +
+            "(:service IS NULL OR ar.employee.user.services = :service) AND " +
+            "(:status IS NULL OR ar.status = :status)")
+    List<AttendanceRecord> findHistory(
+            @Param("startDateTime") LocalDateTime startDateTime,
+            @Param("endDateTime") LocalDateTime endDateTime,
+            @Param("employeeId") Long employeeId,
+            @Param("service") String service,
+            @Param("status") String status);
+
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -51,6 +52,13 @@ public class AttendanceRecordService {
     public AttendanceRecord findByEmployeeId(Long employeeId) {
         return attendanceRecordRepository.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new RuntimeException("Attendance record not found for employee ID: " + employeeId));
+    }
+
+
+    public List<AttendanceRecord> getAttendanceHistory(LocalDate startDate, LocalDate endDate, Long employeeId, String service, String status) {
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = (endDate != null) ? endDate.atTime(LocalTime.MAX) : null;
+        return attendanceRecordRepository.findHistory(startDateTime, endDateTime, employeeId, service, status);
     }
 
 
