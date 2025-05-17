@@ -186,4 +186,25 @@ public AttendanceRecord recordAttendance(@RequestBody AttendanceRecordRequest re
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/employee/{employeeId}/records")
+    public ResponseEntity<List<AttendanceRecordDTO>> getEmployeeAttendanceRecords(
+            @PathVariable Long employeeId
+    ) {
+        List<AttendanceRecord> records = attendanceRecordService.getAttendanceRecordsByEmployeeId(employeeId);
+
+        List<AttendanceRecordDTO> dtos = records.stream()
+                .map(record -> new AttendanceRecordDTO(
+                        record.getId(),
+                        record.getEmployee().getId(),
+                        record.getEmployee().getName(),
+                        record.getTimestamp(),
+                        record.getStatus(),
+                        record.isNotifiedManager(),
+                        record.isReportedChef()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
 }

@@ -43,4 +43,8 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
             @Param("service") String service,
             @Param("status") String status);
 
+
+    // Add this method to get all records for a specific employee
+    List<AttendanceRecord> findByEmployeeIdOrderByTimestampDesc(Long employeeId);
+
 }

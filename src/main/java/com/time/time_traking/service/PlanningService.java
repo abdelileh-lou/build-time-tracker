@@ -54,6 +54,7 @@ public class PlanningService {
         throw new IllegalArgumentException("Planning not found with name: " + name);
     }
 
+
     public String getPlanningByName(String name) throws IOException {
         List<Planning> allPlannings = planningRepository.findAll();
         for (Planning planning : allPlannings) {
@@ -100,4 +101,10 @@ public class PlanningService {
     public List<Planning> getAllPlannings() {
         return planningRepository.findAll();
     }
+
+
+
+
+
 }
+

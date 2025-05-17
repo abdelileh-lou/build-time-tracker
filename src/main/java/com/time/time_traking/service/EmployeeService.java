@@ -238,4 +238,17 @@ public class EmployeeService {
 
 
 
+
+    //new to delete
+    // EmployeeService.java
+    public List<Employee> getEmployeesByServ(String service) {
+        return employeeRepository.findEmployeesByService(service);
+    }
+
+    //new to delete
+    public List<Employee> getEmployeesOnly() {
+        return employeeRepository.findAllEmployeesExceptManagerAndChefService();
+    }
+
+
 }

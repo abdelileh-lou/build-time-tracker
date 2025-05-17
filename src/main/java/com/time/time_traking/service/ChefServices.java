@@ -2,7 +2,9 @@ package com.time.time_traking.service;
 
 import com.time.time_traking.DTO.AttendanceRecordDTO;
 import com.time.time_traking.model.AttendanceRecord;
+import com.time.time_traking.model.ChefService;
 import com.time.time_traking.repository.AttendanceRecordRepository;
+import com.time.time_traking.repository.ChefServiceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +18,10 @@ import java.util.stream.Collectors;
 public class ChefServices {
 
     private final AttendanceRecordRepository attendanceRecordRepository;
+    private final ChefServiceRepository chefServiceRepository;
 
-    public ChefServices(AttendanceRecordRepository attendanceRecordRepository) {
+    public ChefServices(AttendanceRecordRepository attendanceRecordRepository , ChefServiceRepository chefServiceRepository) {
+        this.chefServiceRepository = chefServiceRepository;
         this.attendanceRecordRepository = attendanceRecordRepository;
     }
 
@@ -51,4 +55,10 @@ public class ChefServices {
                         record.isReportedChef()))
                 .collect(Collectors.toList());
     }
+
+    public ChefService getChefServiceDetailsById(Long id) {
+        // Fetch the ChefService by id
+        return chefServiceRepository.findChefServiceById(id);
+    }
+
 } 

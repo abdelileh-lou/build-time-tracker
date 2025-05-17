@@ -32,18 +32,7 @@ public class SecurityConfig {
 
 
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtUtil jwtUtil, UserDetailsService userDetailsService) throws Exception {
-//        return http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/**", "/signup").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userDetailsService),
-//                        UsernamePasswordAuthenticationFilter.class)
-//                .build();
-//    }
+
 
 
     @Bean

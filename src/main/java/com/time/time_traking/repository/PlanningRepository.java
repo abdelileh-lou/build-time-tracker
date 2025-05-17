@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface PlanningRepository  extends JpaRepository<Planning, Long> {
-
+    List<Planning> findAll();
 
 }

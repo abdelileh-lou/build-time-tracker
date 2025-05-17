@@ -37,9 +37,24 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 
     //Showing employees from your service only
-    @Query("SELECT e FROM Employee e WHERE e.user.services = :service AND e.role = 'EMPLOYEE'")
+//    @Query("SELECT e FROM Employee e WHERE e.user.services = :service AND e.role = 'EMPLOYEE'")
+//    List<Employee> findEmployeesByServiceAndRoleEmployee(@Param("service") String service);
+
+    @Query("SELECT e FROM Employee e WHERE e.user.services = :service AND e.role = 'EMPLOYEE' AND e.employeeType = 'Employee'")
     List<Employee> findEmployeesByServiceAndRoleEmployee(@Param("service") String service);
 
 
+
+
+
+
+
+    // new to delete
+    @Query("SELECT e FROM Employee e WHERE e.user.services = :service AND TYPE(e) = Employee")
+    List<Employee> findEmployeesByService(@Param("service") String service);
+
+    //new to delete
+    @Query("SELECT e FROM Employee e WHERE e.employeeType NOT IN ('Manager', 'ChefService')")
+    List<Employee> findAllEmployeesExceptManagerAndChefService();
 
 }

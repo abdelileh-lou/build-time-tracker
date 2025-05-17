@@ -145,33 +145,45 @@ public class EmployeeController {
 
 
     //Showing employees from your service only
+//    @GetMapping("/employees/my-service")
+//    public ResponseEntity<List<Employee>> getEmployeesByMyService(Authentication authentication) {
+//        try {
+//            // Get current user's username
+//            String username = authentication.getName();
+//
+//            // Find user by username, throw exception if not found
+//            User user = userService.findByUsername(username)
+//                    .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//
+//            // Get the service from the user
+//            String service = user.getServices();
+//
+//            // Get employees by service and role
+//            List<Employee> employees = employeeService.getEmployeesByService(service);
+//
+//            return new ResponseEntity<>(employees, HttpStatus.OK);
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//            System.out.println(e.getStackTrace());
+//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+//        }
+//    }
+
+
+
     @GetMapping("/employees/my-service")
     public ResponseEntity<List<Employee>> getEmployeesByMyService(Authentication authentication) {
-        try {
-            // Get current user's username
-            String username = authentication.getName();
+        String username = authentication.getName();
 
-            // Find user by username, throw exception if not found
-            User user = userService.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.findByUsername(username)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
 
+        String service = user.getServices();
+        List<Employee> employees = employeeService.getEmployeesByServ(service);
 
-            // Get the service from the user
-            String service = user.getServices();
-
-            // Get employees by service and role
-            List<Employee> employees = employeeService.getEmployeesByService(service);
-
-            return new ResponseEntity<>(employees, HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println(e.getStackTrace());
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
+        return new ResponseEntity<>(employees, HttpStatus.OK);
     }
-
-
-
 
 
 
@@ -375,6 +387,14 @@ public class EmployeeController {
 
 
     }
+
+    // new to delete
+    @GetMapping("/employees-only")
+    public ResponseEntity<List<Employee>> getEmployeesOnly() {
+        List<Employee> employees = employeeService.getEmployeesOnly();
+        return ResponseEntity.ok(employees);
+    }
+
 
 
 }

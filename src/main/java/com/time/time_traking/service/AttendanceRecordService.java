@@ -62,4 +62,10 @@ public class AttendanceRecordService {
     }
 
 
+    //new to delete
+    // Add this method
+    public List<AttendanceRecord> getAttendanceRecordsByEmployeeId(Long employeeId) {
+        return attendanceRecordRepository.findByEmployeeIdOrderByTimestampDesc(employeeId);
+    }
+
 }

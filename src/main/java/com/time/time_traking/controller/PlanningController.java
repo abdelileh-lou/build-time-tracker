@@ -70,6 +70,10 @@ public class PlanningController {
 
 
 
+    @GetMapping
+    public ResponseEntity<List<Planning>> getPlannings() {
+        return ResponseEntity.ok(planningService.getAllPlannings());
+    }
 
     @GetMapping("/plannings")
     public ResponseEntity<List<Planning>> getAllPlannings() {
