@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,8 +37,30 @@ public class EmployeeService {
         return employeeRepository.findById(id).orElse(null);
     }
 
+    //old and important
+//    public Employee addEmployee(Employee employee) {
+//        // Create User first
+//        User user = userService.registerUser(
+//                employee.getUsername(),
+//                employee.getPassword(),
+//                employee.getRole(),
+//                employee.getService()
+//        );
+//
+//        // Link the User to the Employee
+//        employee.setUser(user);
+//
+//        return employeeRepository.save(employee);
+//    }
+
     public Employee addEmployee(Employee employee) {
-        // Create User first
+        // Generate unique PIN first
+        String pin;
+        do {
+            pin = generateRandomPin();
+        } while (employeeRepository.findByPinCode(pin).isPresent());
+
+        // Create User
         User user = userService.registerUser(
                 employee.getUsername(),
                 employee.getPassword(),
@@ -45,16 +68,16 @@ public class EmployeeService {
                 employee.getService()
         );
 
-        // Convert facial data if exists
-//        if(facialDescriptor != null) {
-//            byte[] facialBytes = convertFacialDescriptorToBytes(facialDescriptor);
-//            employee.setFacialData(facialBytes);
-//        }
-
-        // Link the User to the Employee
+        // Set generated PIN and link User
+        employee.setPinCode(pin);
         employee.setUser(user);
 
+        // Save and return
         return employeeRepository.save(employee);
+    }
+
+    private String generateRandomPin() {
+        return String.valueOf(new Random().nextInt(900000) + 100000); // 6-digit PIN
     }
 
     private byte[] convertFacialDescriptorToBytes(List<Double> descriptor) {
@@ -251,4 +274,9 @@ public class EmployeeService {
     }
 
 
+    //codepin
+    public String getEmployeePinCode(Long id) {
+        Employee employee = getEmployeeById(id);
+        return (employee != null) ? employee.getPinCode() : null;
+    }
 }

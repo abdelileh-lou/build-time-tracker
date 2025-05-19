@@ -64,4 +64,9 @@ public class Employee {
     @Lob // pour les longues données
     @Column(columnDefinition = "TEXT")
     private String facialData; // Add facial data field
+
+
+    // new attribute pin
+    @Column(unique = true)
+    private String pinCode;
 }

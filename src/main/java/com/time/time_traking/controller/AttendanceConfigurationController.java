@@ -44,6 +44,12 @@ public class AttendanceConfigurationController {
         facialConfig.setPriority(config.getFacialRecognitionPriority());
         dto.setFacialRecognition(facialConfig);
 
+        // new attendance methods
+        MethodConfig pinConfig = new MethodConfig();
+        pinConfig.setActive(config.isPinCodeActive());
+        pinConfig.setPriority(config.getPinCodePriority());
+        dto.setPinCode(pinConfig);
+
         return dto;
     }
 }

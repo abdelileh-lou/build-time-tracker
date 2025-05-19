@@ -30,6 +30,10 @@ public class AttendanceConfigurationService {
         config.setQrCodePriority(dto.getQrCode().getPriority());
         config.setFacialRecognitionActive(dto.getFacialRecognition().isActive());
         config.setFacialRecognitionPriority(dto.getFacialRecognition().getPriority());
+
+        // new attendance methods
+        config.setPinCodeActive(dto.getPinCode().isActive());
+        config.setPinCodePriority(dto.getPinCode().getPriority());
         return repository.save(config);
     }
 }

@@ -13,4 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AttendanceMethodsDTO {
     private MethodConfig qrCode;
     private MethodConfig facialRecognition;
+
+    // new attendance methods
+    private MethodConfig pinCode;
 }

@@ -21,4 +21,8 @@ public class AttendanceConfiguration {
     private int qrCodePriority;
     private boolean facialRecognitionActive;
     private int facialRecognitionPriority;
+
+    // new attendance methods
+    private boolean pinCodeActive;
+    private int pinCodePriority;
 }

@@ -144,31 +144,7 @@ public class EmployeeController {
     }
 
 
-    //Showing employees from your service only
-//    @GetMapping("/employees/my-service")
-//    public ResponseEntity<List<Employee>> getEmployeesByMyService(Authentication authentication) {
-//        try {
-//            // Get current user's username
-//            String username = authentication.getName();
-//
-//            // Find user by username, throw exception if not found
-//            User user = userService.findByUsername(username)
-//                    .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//
-//            // Get the service from the user
-//            String service = user.getServices();
-//
-//            // Get employees by service and role
-//            List<Employee> employees = employeeService.getEmployeesByService(service);
-//
-//            return new ResponseEntity<>(employees, HttpStatus.OK);
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            System.out.println(e.getStackTrace());
-//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-//        }
-//    }
+
 
 
 
@@ -393,6 +369,15 @@ public class EmployeeController {
     public ResponseEntity<List<Employee>> getEmployeesOnly() {
         List<Employee> employees = employeeService.getEmployeesOnly();
         return ResponseEntity.ok(employees);
+    }
+
+ // codepin
+    @GetMapping("/employee/{id}/code-pin")
+    public ResponseEntity<String> getEmployeePinCode(@PathVariable Long id) {
+        String pin = employeeService.getEmployeePinCode(id);
+        return pin != null
+                ? ResponseEntity.ok(pin)
+                : ResponseEntity.notFound().build();
     }
 
 

@@ -57,4 +57,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query("SELECT e FROM Employee e WHERE e.employeeType NOT IN ('Manager', 'ChefService')")
     List<Employee> findAllEmployeesExceptManagerAndChefService();
 
+    // new attribute
+    Optional<Employee> findByPinCode(String pinCode);
 }

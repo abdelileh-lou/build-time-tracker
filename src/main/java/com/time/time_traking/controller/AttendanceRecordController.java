@@ -38,18 +38,7 @@ public class AttendanceRecordController {
         this.attendanceRecordRepository = attendanceRecordRepository;
     }
 
-//    @PostMapping("/record")
-//    public AttendanceRecord recordAttendance(@RequestBody AttendanceRecordRequest request) {
-//        Employee employee = employeeService.findById(request.getEmployeeId());
-//
-//        AttendanceRecord record = new AttendanceRecord();
-//        record.setEmployee(employee);
-//        record.setStatus(request.getStatus());
-//        record.setTimestamp(LocalDateTime.now());
-//
-//        record = attendanceRecordService.save(record);
-//        return  record;
-//    }
+
 @PostMapping("/record")
 public AttendanceRecord recordAttendance(@RequestBody AttendanceRecordRequest request) {
     // Add QR code validation logic here
