@@ -10,6 +10,7 @@ import com.time.time_traking.service.AttendanceRecordService;
 import com.time.time_traking.service.EmployeeService;
 import org.springframework.boot.autoconfigure.batch.BatchTransactionManager;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -194,6 +195,17 @@ public AttendanceRecord recordAttendance(@RequestBody AttendanceRecordRequest re
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
+    }
+
+    //delete
+    @DeleteMapping("/record/{id}")
+    public ResponseEntity<?> deleteAttendanceRecord(@PathVariable Long id) {
+        try {
+            attendanceRecordService.deleteAttendanceRecord(id);
+            return ResponseEntity.ok().body("Attendance record deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
 }

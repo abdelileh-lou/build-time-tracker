@@ -68,4 +68,13 @@ public class AttendanceRecordService {
         return attendanceRecordRepository.findByEmployeeIdOrderByTimestampDesc(employeeId);
     }
 
+
+
+
+    //delete methode
+    public void deleteAttendanceRecord(Long id) {
+        AttendanceRecord record = attendanceRecordRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Attendance record not found with id: " + id));
+        attendanceRecordRepository.delete(record);
+    }
 }
