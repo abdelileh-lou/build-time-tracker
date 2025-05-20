@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,8 +58,15 @@ public class ChefServices {
     }
 
     public ChefService getChefServiceDetailsById(Long id) {
-        // Fetch the ChefService by id
-        return chefServiceRepository.findChefServiceById(id);
+        return null;
     }
 
+    public List<ChefService> getAllChefServices() {
+        return chefServiceRepository.findAll();
+    }
+
+
+    public Optional<ChefService> getChefServiceById(Long id) {
+        return chefServiceRepository.findById(id);
+    }
 } 

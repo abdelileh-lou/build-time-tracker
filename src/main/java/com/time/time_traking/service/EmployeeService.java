@@ -279,4 +279,10 @@ public class EmployeeService {
         Employee employee = getEmployeeById(id);
         return (employee != null) ? employee.getPinCode() : null;
     }
+
+
+    public Optional<Employee> getEmployeeByI(Long id) {
+        return employeeRepository.findById(id); // Keep it as Optional
+    }
+
 }
