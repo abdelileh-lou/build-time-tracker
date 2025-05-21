@@ -37,21 +37,7 @@ public class EmployeeService {
         return employeeRepository.findById(id).orElse(null);
     }
 
-    //old and important
-//    public Employee addEmployee(Employee employee) {
-//        // Create User first
-//        User user = userService.registerUser(
-//                employee.getUsername(),
-//                employee.getPassword(),
-//                employee.getRole(),
-//                employee.getService()
-//        );
-//
-//        // Link the User to the Employee
-//        employee.setUser(user);
-//
-//        return employeeRepository.save(employee);
-//    }
+
 
     public Employee addEmployee(Employee employee) {
         // Generate unique PIN first

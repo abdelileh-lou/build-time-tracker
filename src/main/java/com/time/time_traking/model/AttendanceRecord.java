@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -21,11 +23,10 @@ public class AttendanceRecord {
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Employee employee;
 
-//    @ManyToOne
-//    @JoinColumn(name = "attendance_type_id", nullable = false)
-//    private AttendanceType attendanceType;
+
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
@@ -41,8 +42,6 @@ public class AttendanceRecord {
     @Column(name = "method")  // Add this field
     private String method;
 
-//    public void setAttendanceType(AttendanceType attendanceType) {
-//        this.attendanceType = attendanceType;
-//    }
+
 
 }

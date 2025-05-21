@@ -49,14 +49,14 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 
 
-    // new to delete
+
     @Query("SELECT e FROM Employee e WHERE e.user.services = :service AND TYPE(e) = Employee")
     List<Employee> findEmployeesByService(@Param("service") String service);
 
-    //new to delete
+
     @Query("SELECT e FROM Employee e WHERE e.employeeType NOT IN ('Manager', 'ChefService')")
     List<Employee> findAllEmployeesExceptManagerAndChefService();
 
-    // new attribute
+
     Optional<Employee> findByPinCode(String pinCode);
 }

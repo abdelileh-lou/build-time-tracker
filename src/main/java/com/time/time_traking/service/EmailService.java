@@ -11,8 +11,6 @@ public class EmailService {
         System.out.println("Subject: " + subject);
         System.out.println("Content: " + content);
 
-        // For actual implementation, you could use:
-        // - JavaMailSender (Spring's email sender)
-        // - Third-party services like SendGrid, Mailchimp, etc.
+
     }
 }

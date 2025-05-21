@@ -18,28 +18,7 @@ public class NotificationService {
     @Autowired
     private EmailService emailService;
 
-//    public void notifyManager(AttendanceRecord record) {
-//        if (record.getEmployee().getDepartment() == null) {
-//            return; // Skip if employee has no department
-//        }
-//
-//        // Get all managers in the same department
-//        List<Manager> managers = employeeRepository.findManagersByDepartment(
-//                record.getEmployee().getDepartment()
-//        );
-//
-//        for (Manager manager : managers) {
-//            // Send notification
-//            String message = String.format(
-//                    "Employee %s has checked in at %s",
-//                    record.getEmployee().getName(),
-//                    record.getTimestamp()
-//            );
-//            emailService.sendEmail(manager.getEmail(), "Attendance Notification", message);
-//        }
-//
-//        record.setNotifiedManager(true);
-//    }
+
 
 
     // In NotificationService.java

@@ -12,7 +12,7 @@ public class JwtUtil {
     private  final  long expirationTime = 86400000;
 
     public String generateToken(String username) {
-           return Jwts.builder().setSubject(username).setExpiration(new Date(System.currentTimeMillis() + expirationTime)).signWith(SignatureAlgorithm.HS256, secretKey).compact();
+        return Jwts.builder().setSubject(username).setExpiration(new Date(System.currentTimeMillis() + expirationTime)).signWith(SignatureAlgorithm.HS256, secretKey).compact();
     }
 
     public String extractUsername(String token) {

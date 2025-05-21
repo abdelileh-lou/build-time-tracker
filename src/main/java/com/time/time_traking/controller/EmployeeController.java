@@ -107,7 +107,7 @@ public class EmployeeController {
 
 
 
-    //new
+
     @GetMapping("planning/employee/{id}")
 
     public ResponseEntity<Planning> getPlanning(@PathVariable Long id) {
@@ -305,49 +305,7 @@ public class EmployeeController {
 
 
 
-//    @GetMapping("/employee/{id}/facial-data")
-//    public ResponseEntity<?> getFacialDataEmployee(@PathVariable Long id) {
-//        try {
-//            Employee employee = employeeService.getEmployeeById(id);
-//            if (employee == null) {
-//                return ResponseEntity.notFound().build();
-//            }
-//            String facialDataStr = employee.getFacialData();
-//            if (facialDataStr == null || facialDataStr.trim().isEmpty()) {
-//                return ResponseEntity.notFound().build();
-//            }
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            try {
-//                // Parse JSON to extract the "description" array
-//                JsonNode rootNode = objectMapper.readTree(facialDataStr);
-//                JsonNode descriptionNode = rootNode.get("description");
-//
-//                if (descriptionNode == null || !descriptionNode.isArray()) {
-//                    return ResponseEntity.badRequest().body("Invalid facial data format");
-//                }
-//
-//                List<Double> facialData = new ArrayList<>();
-//                for (JsonNode node : descriptionNode) {
-//                    if (node.isNumber()) {
-//                        facialData.add(node.asDouble());
-//                    } else {
-//                        return ResponseEntity.badRequest().body("Invalid facial data format");
-//                    }
-//                }
-//
-//                if (facialData.isEmpty()) {
-//                    return ResponseEntity.notFound().build();
-//                }
-//
-//                return ResponseEntity.ok(facialData);
-//            } catch (JsonProcessingException e) {
-//                return ResponseEntity.badRequest().body("Invalid facial data format");
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
+
 
     @GetMapping("/employee/{id}/facial-data")
     public ResponseEntity<?> getFacialDataEmployee(@PathVariable Long id) {
